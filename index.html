@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tshabalala Kota</title>
+
+<style>
+body { font-family: Arial; margin:0; background:#f5f5f5; }
+
+header {
+    background:#d60000;
+    color:white;
+    text-align:center;
+    padding:20px;
+}
+
+.container { padding:15px; }
+
+.card {
+    background:white;
+    padding:15px;
+    margin-bottom:15px;
+    border-radius:8px;
+}
+
+.menu-item {
+    display:flex;
+    justify-content:space-between;
+    margin:5px 0;
+}
+
+button {
+    padding:8px;
+    border:none;
+    border-radius:5px;
+    margin-left:5px;
+}
+
+.add { background:#28a745; color:white; }
+.remove { background:#dc3545; color:white; }
+.whatsapp { background:#25D366; color:white; width:100%; margin-top:10px; }
+.pay { background:black; color:white; width:100%; margin-top:10px; }
+
+.total {
+    font-size:20px;
+    text-align:right;
+    margin-top:10px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>TSHABALALA'S KOTA</h1>
+<p>Order Fast 🔥 | No beef patties (polony used)</p>
+</header>
+
+<div class="container">
+
+<div class="card">
+<h3>🍔 Menu</h3>
+<div id="menu"></div>
+</div>
+
+<div class="card">
+<h3>🛒 Cart</h3>
+<div id="cart"></div>
+<div class="total">Total: R<span id="total">0</span></div>
+
+<button class="whatsapp" onclick="checkoutWhatsApp()">Order via WhatsApp</button>
+<button class="pay" onclick="payNow()">Pay Now</button>
+<button onclick="clearCart()">Clear Cart</button>
+
+</div>
+
+</div>
+
+<script>
+
+const items = [
+["Kota 1 French Chips",17],
+["Kota 2 French Burger",20],
+["Kota 3 French Vienna",20],
+["Kota 4 French Cheese",20],
+["Kota 5 French Cheese Burger",25],
+["Kota 6 French Egg",25],
+["Kota 7 French Russian",25],
+["Kota 8 French Cheese Vienna",25],
+["Kota 9 French Cheese Russian",27],
+["Kota 10 French Cheese Egg",28],
+["Kota 11 French Russian Egg",30],
+["Kota 12 French Russian Burger",30],
+["Kota 13 French Russian Cheese Burger",35],
+["Kota 14 French Cheese Russian Egg",35],
+["Kota 15 French Russian Burger Egg Vienna",40],
+["Kota 16 French Russian Egg Cheese Burger",45],
+["Kota 17 French Cheese Russian Burger Egg Vienna",50],
+["Deluxe Burger Cheese Vienna",30],
+["Deluxe Cheese Egg Vienna",30],
+["Deluxe Burger Cheese Russian Egg",40],
+["Small Chips",20],
+["Medium Chips",30],
+["Large Chips",40],
+["Vienna",5],
+["Cheese",5],
+["Burger",5],
+["Russian",14],
+["French",2]
+];
+
+let cart = {};
+
+function loadMenu(){
+    let menuDiv = document.getElementById("menu");
+
+    items.forEach(item=>{
+        let div = document.createElement("div");
+        div.className="menu-item";
+
+        div.innerHTML = `
+        <span>${item[0]} - R${item[1]}</span>
+        <button class="add" onclick="addItem('${item[0]}',${item[1]})">+</button>
+        `;
+
+        menuDiv.appendChild(div);
+    });
+}
+
+function addItem(name, price){
+    if(!cart[name]){
+        cart[name] = {qty:0, price:price};
+    }
+    cart[name].qty++;
+    updateCart();
+}
+
+function removeItem(name){
+    cart[name].qty--;
+    if(cart[name].qty <= 0){
+        delete cart[name];
+    }
+    updateCart();
+}
+
+function updateCart(){
+    let cartDiv = document.getElementById("cart");
+    cartDiv.innerHTML = "";
+    let total = 0;
+
+    for(let item in cart){
+        let data = cart[item];
+        let itemTotal = data.qty * data.price;
+        total += itemTotal;
+
+        let div = document.createElement("div");
+        div.className="menu-item";
+
+        div.innerHTML = `
+        <span>${item} x${data.qty} - R${itemTotal}</span>
+        <div>
+        <button class="add" onclick="addItem('${item}',${data.price})">+</button>
+        <button class="remove" onclick="removeItem('${item}')">-</button>
+        </div>
+        `;
+
+        cartDiv.appendChild(div);
+    }
+
+    document.getElementById("total").innerText = total;
+}
+
+function checkoutWhatsApp(){
+    let msg = "Hello, I want to order:%0A";
+
+    let total = 0;
+
+    for(let item in cart){
+        let d = cart[item];
+        let t = d.qty * d.price;
+        total += t;
+        msg += `${item} x${d.qty} = R${t}%0A`;
+    }
+
+    msg += `Total: R${total}`;
+
+    window.open("https://wa.me/27799172712?text="+msg);
+}
+
+function payNow(){
+    let link = "YOUR_YOCO_LINK_HERE";
+    window.open(link);
+}
+
+function clearCart(){
+    cart = {};
+    updateCart();
+}
+
+loadMenu();
+
+</script>
+
+</body>
+</html>
